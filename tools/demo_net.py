@@ -112,6 +112,7 @@ def demo(cfg):
 
         for task in tqdm.tqdm(run_demo(cfg, frame_provider)):
             frame_provider.display(task)
+            pass
 
         frame_provider.join()
         frame_provider.clean()

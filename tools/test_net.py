@@ -260,7 +260,7 @@ def test(cfg):
                 flops,
                 view,
                 test_meter.stats["top1_acc"],
-                test_meter.stats["top5_acc"],
+                test_meter.stats["top1_acc"],
                 misc.gpu_mem_usage(),
                 flops,
             )
