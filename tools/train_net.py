@@ -30,17 +30,6 @@ from slowfast.models.contrastive import (
 from slowfast.utils.meters import AVAMeter, EpochTimer, TrainMeter, ValMeter
 from slowfast.utils.multigrid import MultigridSchedule
 
-# import wandb
-# import wandb
-# import random
-
-# # start a new wandb run to track this script
-# wandb.init(
-#     # set the wandb project where this run will be logged
-#     project="timesformer",
-
-
-# )
 
 logger = logging.get_logger(__name__)
 
@@ -238,7 +227,7 @@ def train_epoch(
                     loss_extra = [one_loss.item() for one_loss in loss_extra]
             else:
                 # Compute the errors.
-                num_topks_correct = metrics.topks_correct(preds, labels, (1, 1))
+                num_topks_correct = metrics.topks_correct(preds, labels, (1, 4))
                 top1_err, top5_err = [
                     (1.0 - x / preds.size(0)) * 100.0 for x in num_topks_correct
                 ]
@@ -281,10 +270,6 @@ def train_epoch(
                     global_step=data_size * cur_epoch + cur_iter,
                 )
 
-            # wandb.log({"Train/loss": loss,
-            # "Train/lr": lr,
-            # "Train/Top1_err": top1_err,
-            # "Train/Top5_err": top5_err,})
         train_meter.iter_toc()  # do measure allreduce for this meter
         train_meter.log_iter_stats(cur_epoch, cur_iter)
         torch.cuda.synchronize()
@@ -392,7 +377,7 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, train_loader, write
                 if cfg.DATA.IN22k_VAL_IN1K != "":
                     preds = preds[:, :1000]
                 # Compute the errors.
-                num_topks_correct = metrics.topks_correct(preds, labels, (1, 1))
+                num_topks_correct = metrics.topks_correct(preds, labels, (1, 4))
 
                 # Combine the errors across the GPUs.
                 top1_err, top5_err = [
@@ -777,5 +762,4 @@ def train(cfg):
     )
     logger.info("training done: {}".format(result_string))
 
-    # wandb.finish()
     return result_string
